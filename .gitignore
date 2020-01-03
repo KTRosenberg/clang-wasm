@@ -1,3 +1,5 @@
 *.o
 *.wasm
 *.wat
+*.DS_Store
+

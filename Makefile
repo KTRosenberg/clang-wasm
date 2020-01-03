@@ -1,16 +1,15 @@
 DEPS = 
-LLVM_VERSION = 8
+LLVM_VERSION = 9
 OBJ = library.o
 NANOLIBC_OBJ = $(patsubst %.cpp,%.o,$(wildcard nanolibc/*.cpp))
 OUTPUT = library.wasm
 
 COMPILE_FLAGS = -Wall \
-		--target=wasm32 \
+		--target=wasm32-unknown-wasi \
 		-Os \
 		-flto \
-		-nostdlib \
-		-fvisibility=hidden \
-		-std=c++14 \
+		--sysroot /Users/tobyrosenberg/Documents/dev/clang-wasm/nanolibc \
+		-std=c++17 \
 		-ffunction-sections \
 		-fdata-sections \
 		-DPRINTF_DISABLE_SUPPORT_FLOAT=1 \
@@ -18,25 +17,26 @@ COMPILE_FLAGS = -Wall \
 		-DPRINTF_DISABLE_SUPPORT_PTRDIFF_T=1
 
 $(OUTPUT): $(OBJ) $(NANOLIBC_OBJ) Makefile
-	wasm-ld-$(LLVM_VERSION) \
+	wasm-ld \
 		-o $(OUTPUT) \
 		--no-entry \
-		--strip-all \
-		--export-dynamic \
+		--export-all \
 		--initial-memory=131072 \
 		-error-limit=0 \
 		--lto-O3 \
 		-O3 \
 		--gc-sections \
+		-allow-undefined-file /Users/tobyrosenberg/Documents/dev/clang-wasm/nanolibc/wasm.syms \
 		$(OBJ) \
 		$(LIBCXX_OBJ) \
 		$(NANOLIBC_OBJ)
 
 
 %.o: %.cpp $(DEPS) Makefile
-	clang++-$(LLVM_VERSION) \
+	clang++ \
 		-c \
 		$(COMPILE_FLAGS) \
+		-fno-exceptions \
 		-o $@ \
 		$<
 

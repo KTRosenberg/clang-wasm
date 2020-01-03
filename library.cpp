@@ -5,6 +5,12 @@
 void dump_memory();
 
 #define WASM_EXPORT __attribute__((visibility("default"))) extern "C"
+
+
+template <typename T>
+struct Foo_Struct {
+	T field;
+};
  
 WASM_EXPORT char* get_memory_for_string(int size) {
 	return new char[size];
@@ -21,6 +27,10 @@ WASM_EXPORT int string_to_int(const char* str) {
 	while ('0' <= *str && *str <= '9') {
 		i = i * 10 + (int)((*str++) - '0');
 	}
+
+	Foo_Struct<int> data;
+	data.field = i;
+
 	return i;
 }
 
