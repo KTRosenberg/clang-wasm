@@ -4,11 +4,13 @@ OBJ = library.o
 NANOLIBC_OBJ = $(patsubst %.cpp,%.o,$(wildcard nanolibc/*.cpp))
 OUTPUT = library.wasm
 
+DIR := ${CURDIR}
+
 COMPILE_FLAGS = -Wall \
 		--target=wasm32-unknown-wasi \
 		-Os \
 		-flto \
-		--sysroot /Users/tobyrosenberg/Documents/dev/clang-wasm/nanolibc \
+		--sysroot ./nanolibc \
 		-std=c++17 \
 		-ffunction-sections \
 		-fdata-sections \
@@ -26,7 +28,7 @@ $(OUTPUT): $(OBJ) $(NANOLIBC_OBJ) Makefile
 		--lto-O3 \
 		-O3 \
 		--gc-sections \
-		-allow-undefined-file /Users/tobyrosenberg/Documents/dev/clang-wasm/nanolibc/wasm.syms \
+		-allow-undefined-file ./nanolibc/wasm.syms \
 		$(OBJ) \
 		$(LIBCXX_OBJ) \
 		$(NANOLIBC_OBJ)
